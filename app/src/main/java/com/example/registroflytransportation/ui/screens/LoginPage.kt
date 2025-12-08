@@ -25,14 +25,13 @@ import com.example.registroflytransportation.viewModel.UserViewModel
 @Composable
 fun LoginPage(
     viewModel: UserViewModel,
-    onNavigateToRegister: () -> Unit // onLoginSuccess ya no es necesario
+    onNavigateToRegister: () -> Unit
 ) {
     var correo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val loginState by viewModel.loginState.collectAsState()
 
-    // Ya no se necesita el LaunchedEffect para navegar, MainActivity lo hace.
 
     Box(
         modifier = Modifier

@@ -8,12 +8,23 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
 import com.example.registroflytransportation.model.Aeropuerto
 
+/**
+ * Un OutlinedTextField que muestra una lista de sugerencias de aeropuertos
+ * y permite al usuario seleccionar uno.
+ *
+ * @param value El texto actual del campo.
+ * @param onValueChange Callback que se ejecuta cuando el texto cambia.
+ * @param label El Composable que se muestra como etiqueta del campo.
+ * @param suggestions La lista de aeropuertos a mostrar como sugerencias.
+ * @param onSuggestionSelected Callback que se ejecuta cuando se selecciona un aeropuerto.
+ * @param isLoading Indica si se debe mostrar un indicador de carga.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AutoCompleteTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: @Composable () -> Unit, // ¡CORREGIDO! Ahora acepta un Composable, como debe ser.
+    label: @Composable () -> Unit,
     suggestions: List<Aeropuerto>,
     onSuggestionSelected: (Aeropuerto) -> Unit,
     isLoading: Boolean
@@ -31,7 +42,7 @@ fun AutoCompleteTextField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            label = label, // ¡CORREGIDO! Se pasa el Composable directamente.
+            label = label,
             modifier = Modifier.menuAnchor().onFocusChanged { 
                 if(it.isFocused) expanded = suggestions.isNotEmpty()
             },

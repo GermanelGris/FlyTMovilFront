@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -26,7 +27,10 @@ import com.example.registroflytransportation.viewModel.VueloProgramadoViewModel
 import com.example.registroflytransportation.viewModel.VuelosAdminState
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +48,7 @@ fun VuelosAdminPage(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        viewModel.loadVuelos()
+        viewModel.loadInitialData()
     }
 
     Scaffold(
@@ -206,6 +210,32 @@ private fun VueloEditDialog(
     }
 
     var aerolineaExpanded by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf<Boolean?>(null) } // true: Salida, false: Llegada
+    val datePickerState = rememberDatePickerState()
+
+    if (showDatePicker != null) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        formatter.timeZone = TimeZone.getTimeZone("UTC")
+                        val dateStr = formatter.format(Date(millis))
+                        if (showDatePicker == true) {
+                            formData = formData.copy(fechaSalida = dateStr)
+                        } else {
+                            formData = formData.copy(fechaLlegada = dateStr)
+                        }
+                    }
+                    showDatePicker = null
+                }) { Text("Aceptar") }
+            },
+            dismissButton = { TextButton(onClick = { showDatePicker = null }) { Text("Cancelar") } }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(modifier = Modifier.padding(vertical = 32.dp)) {
@@ -245,7 +275,7 @@ private fun VueloEditDialog(
                         formData = formData.copy(origenText = it, idOrigen = null)
                         viewModel.searchAirports(it, "origen")
                     },
-                    label = { Text("Origen") }, // ¡CORREGIDO!
+                    label = { Text("Origen") },
                     suggestions = formState.origenSuggestions,
                     onSuggestionSelected = { airport ->
                         formData = formData.copy(idOrigen = airport.id, origenText = "${airport.ciudad}, ${airport.pais} (${airport.codigo})")
@@ -260,7 +290,7 @@ private fun VueloEditDialog(
                         formData = formData.copy(destinoText = it, idDestino = null)
                         viewModel.searchAirports(it, "destino")
                     },
-                    label = { Text("Destino") }, // ¡CORREGIDO!
+                    label = { Text("Destino") },
                     suggestions = formState.destinoSuggestions,
                     onSuggestionSelected = { airport ->
                         formData = formData.copy(idDestino = airport.id, destinoText = "${airport.ciudad}, ${airport.pais} (${airport.codigo})")
@@ -269,9 +299,29 @@ private fun VueloEditDialog(
                     isLoading = formState.isLoadingDestino
                 )
                 
-                OutlinedTextField(value = formData.fechaSalida, onValueChange = { formData = formData.copy(fechaSalida = it) }, label = { Text("Fecha Salida (YYYY-MM-DD)") })
+                OutlinedTextField(
+                    value = formData.fechaSalida, 
+                    onValueChange = {},
+                    label = { Text("Fecha Salida") },
+                    readOnly = true,
+                    trailingIcon = { 
+                        IconButton(onClick = { showDatePicker = true }) {
+                            Icon(Icons.Default.DateRange, contentDescription = "Seleccionar Fecha de Salida")
+                        }
+                    }
+                )
                 OutlinedTextField(value = formData.horaSalida, onValueChange = { formData = formData.copy(horaSalida = it) }, label = { Text("Hora Salida (HH:mm:ss)") })
-                OutlinedTextField(value = formData.fechaLlegada, onValueChange = { formData = formData.copy(fechaLlegada = it) }, label = { Text("Fecha Llegada (YYYY-MM-DD)") })
+                OutlinedTextField(
+                    value = formData.fechaLlegada, 
+                    onValueChange = {},
+                    label = { Text("Fecha Llegada") },
+                    readOnly = true,
+                    trailingIcon = { 
+                        IconButton(onClick = { showDatePicker = false }) {
+                            Icon(Icons.Default.DateRange, contentDescription = "Seleccionar Fecha de Llegada")
+                        }
+                    }
+                )
                 OutlinedTextField(value = formData.horaLlegada, onValueChange = { formData = formData.copy(horaLlegada = it) }, label = { Text("Hora Llegada (HH:mm:ss)") })
                 OutlinedTextField(value = formData.duracionMin?.toString() ?: "", onValueChange = { formData = formData.copy(duracionMin = it.toIntOrNull()) }, label = { Text("Duración (minutos)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
                 OutlinedTextField(value = formData.precio?.toString() ?: "", onValueChange = { formData = formData.copy(precio = it.toDoubleOrNull()) }, label = { Text("Precio") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))

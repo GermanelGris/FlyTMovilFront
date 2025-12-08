@@ -34,10 +34,9 @@ class AuthInterceptor(private val context: Context) : Interceptor {
     }
 }
 
-// El objeto RetrofitClient no necesita cambios, ya que usa el AuthInterceptor actualizado.
 object RetrofitClient {
-    // CORREGIDO: Se usa 10.0.2.2 para que el emulador pueda conectarse al localhost del ordenador.
-    private const val BASE_URL = "http://192.168.1.134:8090/"
+    // CORREGIDO: Se usa 10.0.2.2; mi ip local 192.168.1.134;  para que el emulador pueda conectarse al localhost del ordenador.
+    private const val BASE_URL = "http://10.0.2.2:8090/"
     private var retrofitInstance: ApiService? = null
 
     fun getInstance(context: Context): ApiService {

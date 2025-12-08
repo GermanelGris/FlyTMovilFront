@@ -12,7 +12,7 @@ data class RegisterRequest(
     val fono: String,
     val fechaNacimiento: String?,
     val password: String,
-    val roles: List<String>, // ¡CORREGIDO! Vuelve a ser una lista, como pide el backend.
+    val roles: List<String>,
     val fotoPerfil: String?
 )
 

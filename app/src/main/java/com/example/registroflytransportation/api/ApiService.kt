@@ -17,7 +17,7 @@ interface ApiService {
     suspend fun getMyProfile(): Response<UserProfile>
 
     // --- Búsqueda Pública de Vuelos ---
-    @GET("api/vuelos-programados/search") // ¡RUTA CORREGIDA!
+    @GET("api/vuelos-programados/search")
     suspend fun buscarVuelos(
         @Query("origen") origen: String,
         @Query("destino") destino: String?, // Destino es opcional
