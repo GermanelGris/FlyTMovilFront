@@ -159,3 +159,7 @@ La app utiliza **Navigation Component** para la navegación entre pantallas. El 
 | `PUT`    | `/api/vuelos/{id}`            | `id`, `VueloBasePayload`        | Actualiza un vuelo base.        |
 | `GET`    | `/api/aerolineas`             | -                               | Obtiene todas las aerolíneas.   |
 | `GET`    | `/api/lugares/buscar`         | `q` (query)                     | Busca aeropuertos.              |
+
+## Autores
+Francisca Blanchard
+Germán Marabolí
